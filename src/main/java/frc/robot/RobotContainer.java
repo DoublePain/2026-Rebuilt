@@ -139,11 +139,11 @@ public class RobotContainer
   {
     //Add this back to make it robot Oriented
 
-    //Command driveRobotOrientedAngularVelocity = drivebase.driveFieldOriented(driveRobotOriented);  
+    Command driveRobotOrientedAngularVelocity = drivebase.driveFieldOriented(driveRobotOriented);  
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
 
     //ROBOT ORIENTED DRIVE
-    drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
+    drivebase.setDefaultCommand(driveRobotOrientedAngularVelocity);
 
     // LIMELIGHT CONTROLS
     driverXbox.rightBumper().whileTrue(drivebase.driveToLimelightTarget());
