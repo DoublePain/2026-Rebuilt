@@ -21,6 +21,7 @@ import frc.robot.LimelightHelpers;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -39,6 +40,7 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * Swerve drive object.
    */
+  
   SwerveDrivePoseEstimator SwerveDrivePoseEstimator;
   private final SwerveDrive swerveDrive;
   private final Pose2d blueAllianceStartingPose = new Pose2d(new Translation2d(Meter.of(1),
@@ -48,7 +50,7 @@ public class SwerveSubsystem extends SubsystemBase
                                                                               Meter.of(4)),
                                                             Rotation2d.fromDegrees(180));
                                                             
-
+  private static final Set<Integer> ALLOWED_TAG_IDS = Set.of(9, 10, 25, 26);
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
    *
@@ -337,7 +339,6 @@ public class SwerveSubsystem extends SubsystemBase
 
 public Command driveToLimelightTarget() {
 
-    // ===== Tunables =====
     final double desiredDistanceMeters = 10.0;
 
     final double kPForward = 0.4;
@@ -353,7 +354,6 @@ public Command driveToLimelightTarget() {
 
     final double stableTimeSeconds = 0.25;
 
-    // ===== State =====
     final double[] lastX = {0.0};
     final double[] prevDistanceError = {0.0};
     final double[] prevXError = {0.0};
@@ -367,10 +367,11 @@ public Command driveToLimelightTarget() {
             boolean targetVisible =
                 LimelightHelpers.getTV("limelight-raider");
 
-            // ------------------ SEARCH ------------------
-            if (!targetVisible) {
-                double rotSpeed =
-                    Math.signum(lastX[0]) * maxSearchSpeed;
+            int tagID = (int) LimelightHelpers.getFiducialID("limelight-raider");
+
+            // ---------- FILTER BY ALLOWED TAGS ----------
+            if (!targetVisible || !ALLOWED_TAG_IDS.contains(tagID)) {
+                double rotSpeed = Math.signum(lastX[0]) * maxSearchSpeed;
 
                 swerveDrive.drive(
                     new Translation2d(0, 0),
@@ -381,7 +382,6 @@ public Command driveToLimelightTarget() {
                 return;
             }
 
-         
             double[] pose =
                 LimelightHelpers.getTargetPose_RobotSpace(
                     "limelight-raider"
@@ -407,7 +407,6 @@ public Command driveToLimelightTarget() {
                 Math.abs(distanceError) < distanceTolerance
                 && Math.abs(xError) < xTolerance;
 
-    
             if (atSetpoint) {
                 timeAtSetpoint[0] += 0.02; // ~20ms loop
 
@@ -422,7 +421,6 @@ public Command driveToLimelightTarget() {
                 timeAtSetpoint[0] = 0;
             }
 
- 
             double forwardSpeed =
                 (distanceError * kPForward)
                 + (distanceDerivative * kDForward);
@@ -431,7 +429,6 @@ public Command driveToLimelightTarget() {
                 (-xError * kPRot)
                 - (xDerivative * kDRot);
 
-          
             if (Math.abs(forwardSpeed) < 0.05) forwardSpeed = 0;
             if (Math.abs(rotSpeed) < 0.05) rotSpeed = 0;
 
@@ -458,5 +455,6 @@ public Command driveToLimelightTarget() {
         )
     );
 }
+
 
 }
