@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Autonomous.Auto;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -25,6 +26,8 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import java.io.File;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import swervelib.SwerveInputStream;
 
 
@@ -51,7 +54,7 @@ public class RobotContainer
   private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-
+  private final Auto m_auto = new Auto(drivebase, Shooter, Intake);
   /**
    * Clone's the angular velocity input stream and converts it to a robotRelative input stream.
    */
@@ -92,6 +95,7 @@ public class RobotContainer
    */
 
    
+   
   public RobotContainer()
   {
 
@@ -100,6 +104,11 @@ public class RobotContainer
     configureBindings();
     defaultCommands();
     DriverStation.silenceJoystickConnectionWarning(true);
+
+
+    //Set up auto commands
+     NamedCommands.registerCommand("AlignToTarget", m_auto.alignCommand);
+
 
     drivebase.setupPathPlanner();
 
@@ -111,6 +120,8 @@ public class RobotContainer
     autoChooser.addOption("Drive Forward", drivebase.driveForward().withTimeout(1));
     //Put the autoChooser on the SmartDashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    
 
   }
 
@@ -173,7 +184,7 @@ public class RobotContainer
   {
     // Pass in the selected auto from the SmartDashboard as our desired autnomous commmand 
     //return autoChooser.getSelected();
-    return drivebase.getAutonomousCommand("Do Nothing");
+    return drivebase.getAutonomousCommand("AlignAuto");
   }
 
 }
