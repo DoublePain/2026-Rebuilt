@@ -29,6 +29,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
+import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import java.io.File;
@@ -63,6 +64,7 @@ public class RobotContainer
   private final KickerSubsystem                Kicker     = new KickerSubsystem();
   private final IndexerSubsystem               Indexer    = new IndexerSubsystem();
   private final ClimberSubsystem               Climber    = new ClimberSubsystem();
+  private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 

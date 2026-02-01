@@ -336,95 +336,127 @@ public class SwerveSubsystem extends SubsystemBase
 }*/
 
 public Command driveToLimelightTarget() {
-final double desiredDistanceMeters = 1.0;  //Change this to change distance from Tag
-final double kPForward = 2;  //Chnage for faster drive to pase
-final double kPRot = 0.1;    //Change for faster rotate to Tag
-final double maxSearchSpeed = 0.7;  //Change for faster Search speed
 
+    // ===== Tunables =====
+    final double desiredDistanceMeters = 10.0;
 
-final double distanceTolerance = 0.05;
-final double xTolerance = 0.03;
+    final double kPForward = 0.4;
+    final double kDForward = 0.2;
 
+    final double kPRot = 0.15;
+    final double kDRot = 0.0;
 
-final double[] lastX = {0};
+    final double maxSearchSpeed = 1.0;
 
+    final double distanceTolerance = 0.2;
+    final double xTolerance = 0.03;
 
-return runOnce(() ->
-LimelightHelpers.setPipelineIndex("limelight-raider", 0)
-).andThen(
-run(() -> {
+    final double stableTimeSeconds = 0.25;
 
+    // ===== State =====
+    final double[] lastX = {0.0};
+    final double[] prevDistanceError = {0.0};
+    final double[] prevXError = {0.0};
+    final double[] timeAtSetpoint = {0.0};
 
-boolean targetVisible =
-LimelightHelpers.getTV("limelight-raider");
+    return runOnce(() ->
+        LimelightHelpers.setPipelineIndex("limelight-raider", 0)
+    ).andThen(
+        run(() -> {
 
+            boolean targetVisible =
+                LimelightHelpers.getTV("limelight-raider");
 
-if (!targetVisible) {
-double rotSpeed =
-Math.signum(lastX[0]) * maxSearchSpeed;
-swerveDrive.drive(
-new Translation2d(0, 0),
-rotSpeed,
-false,
-false
-);
-return;
-}
+            // ------------------ SEARCH ------------------
+            if (!targetVisible) {
+                double rotSpeed =
+                    Math.signum(lastX[0]) * maxSearchSpeed;
 
+                swerveDrive.drive(
+                    new Translation2d(0, 0),
+                    rotSpeed,
+                    false,
+                    false
+                );
+                return;
+            }
 
-double[] pose =
-LimelightHelpers.getTargetPose_RobotSpace(
-"limelight-raider"
-);
+         
+            double[] pose =
+                LimelightHelpers.getTargetPose_RobotSpace(
+                    "limelight-raider"
+                );
 
+            double x = pose[0];
+            double z = pose[2];
 
-double x = pose[0];
-double z = pose[2];
+            lastX[0] = x;
 
+            double distanceError = desiredDistanceMeters - z;
+            double xError = x;
 
-lastX[0] = x;
+            double distanceDerivative =
+                distanceError - prevDistanceError[0];
+            double xDerivative =
+                xError - prevXError[0];
 
+            prevDistanceError[0] = distanceError;
+            prevXError[0] = xError;
 
-double distanceError = desiredDistanceMeters - z;
+            boolean atSetpoint =
+                Math.abs(distanceError) < distanceTolerance
+                && Math.abs(xError) < xTolerance;
 
+    
+            if (atSetpoint) {
+                timeAtSetpoint[0] += 0.02; // ~20ms loop
 
-//STOP
-boolean atSetpoint =
-Math.abs(distanceError) < distanceTolerance
-&& Math.abs(x) < xTolerance;
+                swerveDrive.drive(
+                    new Translation2d(0, 0),
+                    0,
+                    false,
+                    false
+                );
+                return;
+            } else {
+                timeAtSetpoint[0] = 0;
+            }
 
+ 
+            double forwardSpeed =
+                (distanceError * kPForward)
+                + (distanceDerivative * kDForward);
 
-double forwardSpeed = 0;
-double rotSpeed = 0;
+            double rotSpeed =
+                (-xError * kPRot)
+                - (xDerivative * kDRot);
 
+          
+            if (Math.abs(forwardSpeed) < 0.05) forwardSpeed = 0;
+            if (Math.abs(rotSpeed) < 0.05) rotSpeed = 0;
 
-if (!atSetpoint) {
-forwardSpeed = distanceError * kPForward;
-rotSpeed = -x * kPRot;
-}
+            forwardSpeed =
+                MathUtil.clamp(forwardSpeed, -1.0, 1.0);
+            rotSpeed =
+                MathUtil.clamp(rotSpeed, -1.0, 1.0);
 
-
-forwardSpeed =
-MathUtil.clamp(forwardSpeed, -1.0, 1.0);
-rotSpeed =
-MathUtil.clamp(rotSpeed, -1.0, 1.0);
-
-
-swerveDrive.drive(
-new Translation2d(forwardSpeed, 0),
-rotSpeed,
-false,
-false
-);
-})
-).finallyDo(() ->
-swerveDrive.drive(
-new Translation2d(0, 0),
-0,
-false,
-false
-)
-);
+            swerveDrive.drive(
+                new Translation2d(forwardSpeed * 1.5, 0),
+                rotSpeed,
+                false,
+                false
+            );
+        })
+        .until(() -> timeAtSetpoint[0] >= stableTimeSeconds)
+    )
+    .finallyDo(() ->
+        swerveDrive.drive(
+            new Translation2d(0, 0),
+            0,
+            false,
+            false
+        )
+    );
 }
 
 }
