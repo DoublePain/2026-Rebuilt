@@ -57,15 +57,15 @@ public final class Constants
     public static final int IntakearmMotor_ID = 11;
     public static final int IntakeMotor_ID = 12;
     public static final int IndexerMotor_ID = 13;
-    public static final int IndexerMotor2_ID = 14;
-    public static final int KickerMotor_ID = 15;
+     public static final int KickerMotor_ID = 14;
+    public static final int KickerMotor_ID2 = 15;
     public static final int ClimberMotor_ID = 16;
   }
 
    public static class ShooterConstants
   {
    public static final int Shooter_Speed = 1;
-    
+   public static final double kShooterRampRate = 0.1;
   }
   
    public static class IntakeConstants

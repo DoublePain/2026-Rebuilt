@@ -14,29 +14,10 @@ public class IndexerSubsystem extends SubsystemBase {
     private final SparkMax indexerMotor =
         new SparkMax(Constants.IDConstants.IndexerMotor_ID, MotorType.kBrushless);
 
-    private final SparkMax indexerMotor2 =
-        new SparkMax(Constants.IDConstants.IndexerMotor2_ID, MotorType.kBrushless);
 
     public IndexerSubsystem() {
 
-        // Leader motor config
-        SparkMaxConfig leaderConfig = new SparkMaxConfig();
 
-        indexerMotor.configure(
-            leaderConfig,
-            SparkBase.ResetMode.kNoResetSafeParameters,
-            SparkBase.PersistMode.kPersistParameters
-        );
-
-        // Follower motor config (inverted)
-        SparkMaxConfig followerConfig = new SparkMaxConfig();
-        followerConfig.follow(indexerMotor, true); 
-
-        indexerMotor2.configure(
-            followerConfig,
-            SparkBase.ResetMode.kNoResetSafeParameters,
-            SparkBase.PersistMode.kPersistParameters
-        );
     }
 
     /** Set indexer speed (only command leader) */
@@ -62,6 +43,6 @@ public class IndexerSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("IndexerLeaderRPM", indexerMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("IndexerFollowerRPM", indexerMotor2.getEncoder().getVelocity());
+
     }
 }

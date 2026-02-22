@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -41,9 +42,9 @@ public class IntakeSubsystem  extends SubsystemBase {
                                             IntakearmMotor.getAbsoluteEncoder();
       private static final double ABSOLUTE_OFFSET_DEG = 0.0; //Unknown currently
   
-private double getAbsoluteAngleDeg() {
-  return (absEncoder.getPosition() * 360.0) - ABSOLUTE_OFFSET_DEG;
-}
+
+  double AbsoluteAngle = (absEncoder.getPosition() * 360.0) - ABSOLUTE_OFFSET_DEG;
+
     
       //Will tune this on Bot, Sim isnt being nice with YAMS arm tuning
   private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
@@ -102,6 +103,15 @@ private double getAbsoluteAngleDeg() {
     return intakeArm.setAngle(angle);
   }
   
+   public Command DeployIntake(Angle angle)
+  {
+    return intakeArm.setAngle(Degrees.of(25));  //DONT KNOW IF 25 IS RIGHT YET
+  }
+
+   public Command StowIntake(Angle angle)
+  {
+    return intakeArm.setAngle(Degrees.of(115));  //DONT KNOW IF 25 IS RIGHT YET
+  }
   
 
 // Run intake roller
@@ -123,6 +133,17 @@ public Command runIntakeCommand(double speed) {
 public Command stopIntakeCommand() {
     return run(this::stopIntake);
 }
+
+public Command deployAndSpinCommand() {
+    return Commands.parallel(
+        DeployIntake(Degrees.of(25)),
+        run(() -> runIntake(Constants.IntakeConstants.IntakeSpeed))
+    ).finallyDo(() -> {
+        stopIntake();
+        StowIntake(Degrees.of(115)).schedule();
+    }).withName("Intake.DeployAndSpin");
+}
+
 }
 
 

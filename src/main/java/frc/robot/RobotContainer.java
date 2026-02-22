@@ -147,11 +147,14 @@ public class RobotContainer
 
   
     // INTAKE CONTROLS
+    driverXbox.leftBumper().toggleOnTrue(Intake.deployAndSpinCommand());
+    /* 
     driverXbox.leftTrigger().whileTrue(Intake.setAngle(Degrees.of(90)));
     driverXbox.leftTrigger().whileFalse(Intake.setAngle(Degrees.of(10)));
     driverXbox.leftTrigger().whileTrue(Intake.runIntakeCommand(Constants.IntakeConstants.IntakeSpeed));
     driverXbox.leftTrigger().whileFalse(Intake.stopIntakeCommand());
     driverXbox.pov(90).whileTrue(Intake.sysId());
+    */
     
     // SHOOTER CONTROLS
 
@@ -165,8 +168,8 @@ public class RobotContainer
 
      //INDEXER CONTROLS
 
-     driverXbox.b().whileTrue(Indexer.runIndexerCommand(Constants.IndexConstants.IndexSpeed));
-     driverXbox.b().whileFalse(Indexer.stopIndexerCommand());
+     driverXbox.leftBumper().whileTrue(Indexer.runIndexerCommand(Constants.IndexConstants.IndexSpeed));
+     driverXbox.leftBumper().whileFalse(Indexer.stopIndexerCommand());
 
      driverXbox.pov(180).whileTrue(Climber.setAngle(Degrees.of(180)));
      driverXbox.pov(180).whileFalse(Climber.setAngle(Degrees.of(90)));

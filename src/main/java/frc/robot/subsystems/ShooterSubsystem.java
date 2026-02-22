@@ -10,7 +10,12 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
+
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -29,14 +34,17 @@ import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 
 public class ShooterSubsystem extends SubsystemBase {
 
   private final SparkMax flywheelMotor = new SparkMax(Constants.IDConstants.Shooter_Left_ID, MotorType.kBrushless);
+  private final SparkMax flywheelMotor2 = new SparkMax(Constants.IDConstants.Shooter_Right_ID, MotorType.kBrushless);
 
   private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
       .withClosedLoopController(0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
-      .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+      .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
       .withIdleMode(MotorMode.COAST)
       .withTelemetry("FlywheelMotor", TelemetryVerbosity.HIGH)
       .withStatorCurrentLimit(Amps.of(40))
@@ -58,7 +66,18 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final FlyWheel flywheel = new FlyWheel(flywheelConfig);
 
+
+  
   public ShooterSubsystem() {
+
+ SparkMaxConfig followerConfig = new SparkMaxConfig();
+    followerConfig
+            .idleMode(IdleMode.kCoast)
+            .smartCurrentLimit(40)
+            .openLoopRampRate(ShooterConstants.kShooterRampRate)
+            .follow(flywheelMotor, true); // INVERT BECAUSE THE MOTORS ARE ON OPPOSING SIDES
+
+    flywheelMotor2.configure(followerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public AngularVelocity getVelocity() {
