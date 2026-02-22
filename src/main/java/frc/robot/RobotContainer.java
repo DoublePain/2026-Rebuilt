@@ -163,13 +163,13 @@ public class RobotContainer
 
     //KICKER CONTROLS
     
-     driverXbox.b().whileTrue(Kicker.runKickerCommand(Constants.KickerConstants.KickSpeed));
-     driverXbox.b().whileFalse(Kicker.stopKickerCommand());
+     driverXbox.rightTrigger().whileTrue(Kicker.runKickerCommand(Constants.KickerConstants.KickSpeed));
+     driverXbox.rightTrigger().whileFalse(Kicker.stopKickerCommand());
 
      //INDEXER CONTROLS
 
-     driverXbox.leftBumper().whileTrue(Indexer.runIndexerCommand(Constants.IndexConstants.IndexSpeed));
-     driverXbox.leftBumper().whileFalse(Indexer.stopIndexerCommand());
+     driverXbox.rightTrigger().whileTrue(Indexer.runIndexerCommand(Constants.IndexConstants.IndexSpeed));
+     driverXbox.rightTrigger().whileFalse(Indexer.stopIndexerCommand());
 
      driverXbox.pov(180).whileTrue(Climber.setAngle(Degrees.of(180)));
      driverXbox.pov(180).whileFalse(Climber.setAngle(Degrees.of(90)));
