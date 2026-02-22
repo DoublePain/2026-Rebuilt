@@ -17,8 +17,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Autonomous.Auto;
+import frc.robot.commands.DeployAndSpinIntake;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.IntakeSpinSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.CameraSubsystem;
@@ -51,6 +53,7 @@ public class RobotContainer
   private final KickerSubsystem                Kicker     = new KickerSubsystem();
   private final IndexerSubsystem               Indexer    = new IndexerSubsystem();
   private final ClimberSubsystem               Climber    = new ClimberSubsystem();
+  private final IntakeSpinSubsystem IntakeSpin = new IntakeSpinSubsystem();
   private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -61,8 +64,8 @@ public class RobotContainer
 
 //Setting default commands
      public void defaultCommands(){
-    Intake.setDefaultCommand(Intake.stopIntakeCommand());
-    Intake.setDefaultCommand(Intake.setAngle(Degrees.of(90)));
+    IntakeSpin.setDefaultCommand(IntakeSpin.stopIntakeCommand());
+    Intake.setDefaultCommand(Intake.setAngle(Degrees.of(115)));
     Shooter.setDefaultCommand(Shooter.setVelocity(FeetPerSecond.of(0)));
     Indexer.setDefaultCommand(Indexer.stopIndexerCommand());
     Kicker.setDefaultCommand(Kicker.stopKickerCommand());
@@ -147,7 +150,7 @@ public class RobotContainer
 
   
     // INTAKE CONTROLS
-    driverXbox.leftBumper().toggleOnTrue(Intake.deployAndSpinCommand());
+    driverXbox.leftBumper().whileTrue(new DeployAndSpinIntake(Intake, IntakeSpin));
     /* 
     driverXbox.leftTrigger().whileTrue(Intake.setAngle(Degrees.of(90)));
     driverXbox.leftTrigger().whileFalse(Intake.setAngle(Degrees.of(10)));
@@ -187,7 +190,7 @@ public class RobotContainer
   {
     // Pass in the selected auto from the SmartDashboard as our desired autnomous commmand 
     //return autoChooser.getSelected();
-    return drivebase.getAutonomousCommand("AlignAuto");
+    return drivebase.getAutonomousCommand("CenterShootAndClimb");
   }
 
 }

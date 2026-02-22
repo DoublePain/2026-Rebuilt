@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -37,7 +36,6 @@ import com.revrobotics.spark.SparkAbsoluteEncoder;
 public class IntakeSubsystem  extends SubsystemBase {
     
      private final SparkMax                IntakearmMotor    = new SparkMax(Constants.IDConstants.IntakearmMotor_ID, MotorType.kBrushless);
-      private final SparkMax               IntakeMotor    = new SparkMax(Constants.IDConstants.IntakeMotor_ID, MotorType.kBrushless);
       private final SparkAbsoluteEncoder absEncoder =
                                             IntakearmMotor.getAbsoluteEncoder();
       private static final double ABSOLUTE_OFFSET_DEG = 0.0; //Unknown currently
@@ -112,37 +110,8 @@ public class IntakeSubsystem  extends SubsystemBase {
   {
     return intakeArm.setAngle(Degrees.of(115));  //DONT KNOW IF 25 IS RIGHT YET
   }
-  
 
-// Run intake roller
-public void runIntake(double speed) {
-    IntakeMotor.set(speed);
-}
 
-// Stop intake roller
-public void stopIntake() {
-    IntakeMotor.set(0);
-}
-
-// Command to run intake
-public Command runIntakeCommand(double speed) {
-    return run(() -> runIntake(speed));
-}
-
-// Command to stop intake
-public Command stopIntakeCommand() {
-    return run(this::stopIntake);
-}
-
-public Command deployAndSpinCommand() {
-    return Commands.parallel(
-        DeployIntake(Degrees.of(25)),
-        run(() -> runIntake(Constants.IntakeConstants.IntakeSpeed))
-    ).finallyDo(() -> {
-        stopIntake();
-        StowIntake(Degrees.of(115)).schedule();
-    }).withName("Intake.DeployAndSpin");
-}
 
 }
 
