@@ -29,13 +29,22 @@ import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
+
 
 
 public class IntakeSubsystem  extends SubsystemBase {
     
      private final SparkMax                IntakearmMotor    = new SparkMax(Constants.IDConstants.IntakearmMotor_ID, MotorType.kBrushless);
       private final SparkMax               IntakeMotor    = new SparkMax(Constants.IDConstants.IntakeMotor_ID, MotorType.kBrushless);
+      private final SparkAbsoluteEncoder absEncoder =
+                                            IntakearmMotor.getAbsoluteEncoder();
+      private static final double ABSOLUTE_OFFSET_DEG = 0.0; //Unknown currently
   
+private double getAbsoluteAngleDeg() {
+  return (absEncoder.getPosition() * 360.0) - ABSOLUTE_OFFSET_DEG;
+}
+    
       //Will tune this on Bot, Sim isnt being nice with YAMS arm tuning
   private final SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
       .withClosedLoopController(5, 0, 0.1, DegreesPerSecond.of(20), DegreesPerSecondPerSecond.of(20))  
@@ -47,7 +56,7 @@ public class IntakeSubsystem  extends SubsystemBase {
       .withMotorInverted(false)
       .withClosedLoopRampRate(Seconds.of(0.25))
       .withFeedforward(new ArmFeedforward(0.11044, 0, 0, 0.55929))
-      .withControlMode(ControlMode.CLOSED_LOOP);
+      .withControlMode(ControlMode.CLOSED_LOOP).withExternalEncoder(absEncoder);
   private final SmartMotorController       motor            = new SparkWrapper(IntakearmMotor,
                                                                               DCMotor.getNEO(1),
                                                                               motorConfig);
@@ -61,8 +70,11 @@ public class IntakeSubsystem  extends SubsystemBase {
 
   private final Arm       intakeArm      = new Arm(m_config);
 
+  
+
   public IntakeSubsystem()
   {
+
   }
 
   public void periodic()
@@ -89,6 +101,7 @@ public class IntakeSubsystem  extends SubsystemBase {
   {
     return intakeArm.setAngle(angle);
   }
+  
   
 
 // Run intake roller
