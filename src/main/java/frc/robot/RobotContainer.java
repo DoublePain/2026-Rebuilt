@@ -114,8 +114,8 @@ public class RobotContainer
 
     //Set the default auto (do nothing) 
     autoChooser.setDefaultOption("Do Nothing", Commands.none());
-    autoChooser.addOption("Straight",AutoBuilder.buildAuto("Straight Auto")
-);
+    autoChooser.addOption("Straight",AutoBuilder.buildAuto("Straight Auto"));
+    autoChooser.addOption("ShootClimbCenter",AutoBuilder.buildAuto("CenterShootAndClimb"));
     //Add a simple auto option to have the robot drive forward for 1 second then stop
     autoChooser.addOption("Drive Forward", drivebase.driveForward().withTimeout(1));
     //Put the autoChooser on the SmartDashboard
