@@ -15,8 +15,8 @@ public class DeployAndSpinIntake extends SequentialCommandGroup {
         addCommands(
             // Deploy arm and spin wheels in parallel
             new ParallelCommandGroup(
-                arm.DeployIntake(Degrees.of(25)),                    // requires arm
-                new InstantCommand(() -> spin.runIntake(Constants.IntakeConstants.IntakeSpeed)) // doesn't require subsystem
+                arm.DeployIntake(Degrees.of(25)),                  
+                new InstantCommand(() -> spin.runIntake(Constants.IntakeConstants.IntakeSpeed)) 
             ),
 
             // Stop wheels and stow arm
