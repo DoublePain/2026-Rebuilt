@@ -41,7 +41,7 @@ public class IntakeSubsystem  extends SubsystemBase {
       private static final double ABSOLUTE_OFFSET_DEG = 0.0; //Unknown currently
   
 
-  double AbsoluteAngle = (absEncoder.getPosition() * 360.0) - ABSOLUTE_OFFSET_DEG;
+
 
     
       //Will tune this on Bot, Sim isnt being nice with YAMS arm tuning
@@ -69,7 +69,9 @@ public class IntakeSubsystem  extends SubsystemBase {
 
   private final Arm       intakeArm      = new Arm(m_config);
 
-  
+  public double getAbsoluteAngle() {
+    return (absEncoder.getPosition() * 360.0) - ABSOLUTE_OFFSET_DEG;
+}
 
   public IntakeSubsystem()
   {
