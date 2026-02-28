@@ -64,7 +64,7 @@ public class IntakeSubsystem  extends SubsystemBase {
       .withLength(Meters.of(0.135))
       .withHardLimit(Degrees.of(0), Degrees.of(100))
       .withTelemetry("IntakeArm", TelemetryVerbosity.HIGH)
-      .withMass(Pounds.of(15))
+      .withMass(Pounds.of(10))
       .withStartingPosition(Degrees.of(0));
 
   private final Arm       intakeArm      = new Arm(m_config);
@@ -110,7 +110,7 @@ public class IntakeSubsystem  extends SubsystemBase {
 
    public Command StowIntake(Angle angle)
   {
-    return intakeArm.setAngle(Degrees.of(115));  //DONT KNOW IF 25 IS RIGHT YET
+    return intakeArm.setAngle(Degrees.of(115));  //DONT KNOW IF 115 IS RIGHT YET
   }
 
 
